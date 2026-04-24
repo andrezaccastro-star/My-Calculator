@@ -1,0 +1,760 @@
+Aqui está uma calculadora científica profissional com animações e funcionalidade completa:
+
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Calculadora Científica Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b2e 100%);
+            font-family: 'Segoe UI', 'Poppins', 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Partículas de fundo animadas */
+        .particle {
+            position: fixed;
+            background: rgba(34, 197, 94, 0.2);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            animation: floatParticle 20s infinite linear;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.5;
+            }
+            90% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .calculator {
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: 20px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            z-index: 10;
+            animation: slideUp 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .calculator:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 55px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Cabeçalho com estilo */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 15px;
+            padding: 0 5px;
+        }
+
+        .brand {
+            color: #a5f3c6;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background: rgba(34, 197, 94, 0.15);
+            padding: 4px 12px;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .clock {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            font-weight: 500;
+            font-family: monospace;
+            letter-spacing: 1px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px 10px;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .display {
+            background: #020617;
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: all 0.2s;
+        }
+
+        .expression {
+            color: #64748b;
+            font-size: 0.9rem;
+            text-align: right;
+            min-height: 24px;
+            word-wrap: break-word;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .result {
+            color: #22c55e;
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-align: right;
+            overflow-x: auto;
+            white-space: nowrap;
+            font-family: 'Courier New', monospace;
+            margin-top: 8px;
+            text-shadow: 0 0 5px rgba(34, 197, 94, 0.3);
+            transition: all 0.1s ease;
+        }
+
+        /* Scrollbar personalizada */
+        .result::-webkit-scrollbar {
+            height: 3px;
+        }
+
+        .result::-webkit-scrollbar-track {
+            background: #1e293b;
+            border-radius: 10px;
+        }
+
+        .result::-webkit-scrollbar-thumb {
+            background: #22c55e;
+            border-radius: 10px;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        button {
+            padding: 16px 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 20px;
+            background: #334155;
+            color: #f1f5f9;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.4s, height 0.4s;
+        }
+
+        button:active::before {
+            width: 120%;
+            height: 120%;
+        }
+
+        button:active {
+            transform: scale(0.94);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .operator {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(245, 158, 11, 0.3);
+        }
+
+        .equal {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            box-shadow: 0 3px 10px rgba(34, 197, 94, 0.4);
+        }
+
+        .clear {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 3px 10px rgba(239, 68, 68, 0.3);
+        }
+
+        .special {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            box-shadow: 0 3px 10px rgba(99, 102, 241, 0.3);
+        }
+
+        .memory {
+            background: linear-gradient(135deg, #14b8a6, #0d9488);
+        }
+
+        /* Animações de entrada nos botões */
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .buttons button {
+            animation: fadeInScale 0.3s ease backwards;
+        }
+
+        /* Responsividade */
+        @media (max-width: 480px) {
+            .calculator {
+                padding: 15px;
+            }
+            button {
+                padding: 12px 6px;
+                font-size: 0.85rem;
+            }
+            .result {
+                font-size: 1.8rem;
+            }
+            .buttons {
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            button {
+                padding: 10px 4px;
+                font-size: 0.75rem;
+            }
+            .brand {
+                font-size: 0.7rem;
+            }
+        }
+
+        /* efeito de vibração em erro */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+
+        .error-shake {
+            animation: shake 0.3s ease-in-out;
+            color: #ef4444 !important;
+        }
+    </style>
+</head>
+<body>
+<div class="calculator">
+    <div class="header">
+        <div class="brand">🧪 SCIENTIFIC • PRO</div>
+        <div class="clock" id="liveClock">--:--:--</div>
+    </div>
+    <div class="display">
+        <div class="expression" id="expression">0</div>
+        <div class="result" id="result">0</div>
+    </div>
+    <div class="buttons">
+        <!-- Linha 1 -->
+        <button onclick="clearAll()" class="clear">AC</button>
+        <button onclick="deleteLast()" class="clear" style="background:#475569;">⌫</button>
+        <button onclick="append('(')">(</button>
+        <button onclick="append(')')">)</button>
+        <button onclick="append('/')" class="operator">÷</button>
+        
+        <!-- Linha 2 -->
+        <button onclick="append('7')">7</button>
+        <button onclick="append('8')">8</button>
+        <button onclick="append('9')">9</button>
+        <button onclick="append('*')" class="operator">×</button>
+        <button onclick="calculatePower()" class="special">xʸ</button>
+        
+        <!-- Linha 3 -->
+        <button onclick="append('4')">4</button>
+        <button onclick="append('5')">5</button>
+        <button onclick="append('6')">6</button>
+        <button onclick="append('-')" class="operator">−</button>
+        <button onclick="calculateSqrt()" class="special">√</button>
+        
+        <!-- Linha 4 -->
+        <button onclick="append('1')">1</button>
+        <button onclick="append('2')">2</button>
+        <button onclick="append('3')">3</button>
+        <button onclick="append('+')" class="operator">+</button>
+        <button onclick="calculateLog()" class="special">log</button>
+        
+        <!-- Linha 5 -->
+        <button onclick="append('0')">0</button>
+        <button onclick="append('.')">.</button>
+        <button onclick="calculatePi()" class="memory">π</button>
+        <button onclick="calculateExp()" class="special">eˣ</button>
+        <button onclick="calculateResult()" class="equal">=</button>
+        
+        <!-- Linha extra com funções científicas -->
+        <button onclick="calculateSin()" class="special">sin</button>
+        <button onclick="calculateCos()" class="special">cos</button>
+        <button onclick="calculateTan()" class="special">tan</button>
+        <button onclick="calculateLn()" class="special">ln</button>
+        <button onclick="calculateFactorial()" class="special">n!</button>
+    </div>
+</div>
+
+<script>
+    // --- Variáveis Globais ---
+    let currentExpression = '';   // Expressão matemática para avaliar
+    let lastResult = null;
+    let errorFlag = false;
+
+    // Elementos DOM
+    const expressionDiv = document.getElementById('expression');
+    const resultDiv = document.getElementById('result');
+
+    // Função para atualizar a interface (display)
+    function updateDisplay() {
+        if (currentExpression === '') {
+            expressionDiv.innerText = '0';
+        } else {
+            expressionDiv.innerText = currentExpression;
+        }
+        
+        // Se não houver erro, mostra resultado atual ou placeholder
+        if (!errorFlag) {
+            try {
+                // Avaliação de expressão em tempo real (não executa operações perigosas)
+                const evalResult = safeEvaluate(currentExpression);
+                if (evalResult !== undefined && !isNaN(evalResult) && isFinite(evalResult)) {
+                    let formatted = formatResult(evalResult);
+                    resultDiv.innerText = formatted;
+                } else if (currentExpression === '') {
+                    resultDiv.innerText = '0';
+                } else {
+                    resultDiv.innerText = '...';
+                }
+            } catch (e) {
+                resultDiv.innerText = '?';
+            }
+        }
+    }
+
+    // Função segura para avaliar expressões matemáticas (com suporte a Math)
+    function safeEvaluate(expr) {
+        if (!expr || expr.trim() === '') return 0;
+        
+        // Prepara a expressão: substituir × por * e ÷ por /
+        let processed = expr.replace(/×/g, '*').replace(/÷/g, '/');
+        
+        // Adicionar suporte para π (PI)
+        processed = processed.replace(/π/g, 'Math.PI');
+        
+        // Evitar eval puro malicioso, mas permitimos somente operações matemáticas
+        // Vamos validar caracteres permitidos: números, operadores, parênteses, ponto, Math, etc.
+        const allowedPattern = /^[0-9+\-*/()%.,π√e^!sin cos tan log ln exp pow cbrt abs floor ceil ]+$/i;
+        // Para funções científicas, vamos avaliar convertendo manualmente antes
+        
+        // Usaremos Function para maior controle (não eval diretamente)
+        try {
+            // Função de avaliação com contexto Math e funções customizadas
+            const mathContext = {
+                pow: Math.pow,
+                sqrt: Math.sqrt,
+                sin: Math.sin,
+                cos: Math.cos,
+                tan: Math.tan,
+                log: Math.log10,
+                ln: Math.log,
+                exp: Math.exp,
+                PI: Math.PI,
+                abs: Math.abs,
+                floor: Math.floor,
+                ceil: Math.ceil
+            };
+            
+            // Substituir comandos de texto: sqrt( -> Math.sqrt( , etc
+            let jsExpr = processed
+                .replace(/√\(/g, 'Math.sqrt(')
+                .replace(/√([0-9.]+)/g, 'Math.sqrt($1)')
+                .replace(/sin\(/g, 'Math.sin(')
+                .replace(/cos\(/g, 'Math.cos(')
+                .replace(/tan\(/g, 'Math.tan(')
+                .replace(/log\(/g, 'Math.log10(')
+                .replace(/ln\(/g, 'Math.log(')
+                .replace(/exp\(/g, 'Math.exp(')
+                .replace(/\^/g, '**');
+            
+            // Validação extra: não permitir código perigoso
+            if (/[=a-zA-Z]{2,}(?!\(|Math|PI|E|e)/.test(jsExpr.replace(/Math\.\w+/g, ''))) {
+                throw new Error('Expressão inválida');
+            }
+            
+            // Função construtora para avaliar
+            const evalFunc = new Function('Math', 'return (' + jsExpr + ')');
+            let result = evalFunc(mathContext);
+            
+            if (isNaN(result) || !isFinite(result)) {
+                throw new Error('Resultado inválido');
+            }
+            return result;
+        } catch (err) {
+            console.warn("Erro:", err);
+            return undefined;
+        }
+    }
+
+    // Formatar resultado bonito
+    function formatResult(value) {
+        if (value === undefined || isNaN(value) || !isFinite(value)) return 'Erro';
+        // Arredondar para 10 decimais para evitar números enormes
+        if (Math.abs(value) > 1e12) return value.toExponential(8);
+        if (Math.abs(value) < 1e-9 && value !== 0) return value.toExponential(8);
+        // Limitar decimais
+        let rounded = parseFloat(value.toFixed(10));
+        return rounded.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    // Adicionar conteúdo na expressão (com animação)
+    function append(value) {
+        if (errorFlag) {
+            clearAll();
+            errorFlag = false;
+        }
+        
+        // Tratamento especial para multiplicação e divisão visuais
+        let symbol = value;
+        if (symbol === '×') symbol = '*';
+        if (symbol === '÷') symbol = '/';
+        
+        // Se a expressão atual for '0' e adicionamos número, substitui
+        if (currentExpression === '0' && /[0-9(]/.test(symbol)) {
+            currentExpression = '';
+        }
+        
+        currentExpression += value;
+        updateDisplay();
+        // Efeito sonoro (opcional, apenas feedback tátil visual)
+        animateButtonPress();
+    }
+
+    // Função para calcular resultado total
+    function calculateResult() {
+        if (currentExpression === '') {
+            currentExpression = '0';
+        }
+        try {
+            let evaluated = safeEvaluate(currentExpression);
+            if (evaluated !== undefined && !isNaN(evaluated) && isFinite(evaluated)) {
+                lastResult = evaluated;
+                let formatted = formatResult(evaluated);
+                resultDiv.innerText = formatted;
+                expressionDiv.innerText = currentExpression + " =";
+                // Opcional: guardar resultado para futuras operações
+                currentExpression = formatted.replace(/,/g, '');
+                errorFlag = false;
+                // Efeito de sucesso (brilho)
+                resultDiv.style.textShadow = '0 0 8px #22c55e';
+                setTimeout(() => resultDiv.style.textShadow = '', 300);
+            } else {
+                throw new Error('Erro cálculo');
+            }
+        } catch (err) {
+            resultDiv.innerText = 'ERROR';
+            expressionDiv.innerText = 'Expressão inválida';
+            resultDiv.classList.add('error-shake');
+            setTimeout(() => resultDiv.classList.remove('error-shake'), 500);
+            errorFlag = true;
+        }
+        updateDisplay();
+    }
+
+    // Limpar tudo
+    function clearAll() {
+        currentExpression = '';
+        errorFlag = false;
+        lastResult = null;
+        updateDisplay();
+        resultDiv.innerText = '0';
+        expressionDiv.innerText = '0';
+        resultDiv.style.textShadow = '';
+    }
+    
+    // Apagar último caractere
+    function deleteLast() {
+        if (errorFlag) {
+            clearAll();
+            return;
+        }
+        currentExpression = currentExpression.slice(0, -1);
+        updateDisplay();
+        if (currentExpression === '') {
+            resultDiv.innerText = '0';
+        }
+    }
+
+    // Funções científicas avançadas
+    function calculateSqrt() {
+        if (errorFlag) clearAll();
+        let expr = currentExpression === '' ? '0' : currentExpression;
+        let val = safeEvaluate(expr);
+        if (val !== undefined && !isNaN(val) && val >= 0) {
+            let sqrtVal = Math.sqrt(val);
+            currentExpression = formatResult(sqrtVal);
+            updateDisplay();
+            calculateResult();
+        } else {
+            resultDiv.innerText = '√ erro';
+            resultDiv.classList.add('error-shake');
+            setTimeout(() => resultDiv.classList.remove('error-shake'), 500);
+        }
+    }
+    
+    function calculatePower() {
+        if (errorFlag) clearAll();
+        // formato especial: x^y -> adiciona ^
+        append('^');
+        updateDisplay();
+    }
+    
+    function calculateLog() {
+        if (errorFlag) clearAll();
+        let expr = currentExpression === '' ? '0' : currentExpression;
+        let val = safeEvaluate(expr);
+        if (val !== undefined && !isNaN(val) && val > 0) {
+            let logVal = Math.log10(val);
+            currentExpression = formatResult(logVal);
+            updateDisplay();
+            calculateResult();
+        } else {
+            resultDiv.innerText = 'log10 erro';
+            resultDiv.classList.add('error-shake');
+            setTimeout(() => resultDiv.classList.remove('error-shake'), 500);
+        }
+    }
+    
+    function calculateLn() {
+        if (errorFlag) clearAll();
+        let expr = currentExpression === '' ? '0' : currentExpression;
+        let val = safeEvaluate(expr);
+        if (val !== undefined && !isNaN(val) && val > 0) {
+            let lnVal = Math.log(val);
+            currentExpression = formatResult(lnVal);
+            updateDisplay();
+            calculateResult();
+        } else {
+            resultDiv.innerText = 'ln erro';
+            resultDiv.classList.add('error-shake');
+            setTimeout(() => resultDiv.classList.remove('error-shake'), 500);
+        }
+    }
+    
+    function calculateSin() {
+        if (errorFlag) clearAll();
+        let expr = currentExpression === '' ? '0' : currentExpression;
+        let val = safeEvaluate(expr);
+        if (val !== undefined && !isNaN(val)) {
+            let sinVal = Math.sin(val);
+            currentExpression = formatResult(sinVal);
+            updateDisplay();
+            calculateResult();
+        } else {
+            resultDiv.innerText = 'sin erro';
+            resultDiv.classList.add('error-shake');
+            setTimeout(() => resultDiv.classList.remove('error-shake'), 500);
+        }
+    }
+    
+    function calculateCos() {
+        if (errorFlag) clearAll();
+        let expr = currentExpression === '' ? '0' : currentExpression;
+        let val = safeEvaluate(expr);
+        if (val !== undefined && !isNaN(val)) {
+            let cosVal = Math.cos(val);
+            currentExpression = formatResult(cosVal);
+            updateDisplay();
+            calculateResult();
+        } else {
+            resultDiv.innerText = 'cos erro';
+            resultDiv.classList.add('error-shake');
+            setTimeout(() => resultDiv.classList.remove('error-shake'), 500);
+        }
+    }
+    
+    function calculateTan() {
+        if (errorFlag) clearAll();
+        let expr = currentExpression === '' ? '0' : currentExpression;
+        let val = safeEvaluate(expr);
+        if (val !== undefined && !isNaN(val)) {
+            let tanVal = Math.tan(val);
+            currentExpression = formatResult(tanVal);
+            updateDisplay();
+            calculateResult();
+        } else {
+            resultDiv.innerText = 'tan erro';
+            resultDiv.classList.add('error-shake');
+            setTimeout(() => resultDiv.classList.remove('error-shake'), 500);
+        }
+    }
+    
+    function calculatePi() {
+        append('π');
+    }
+    
+    function calculateExp() {
+        if (errorFlag) clearAll();
+        let expr = currentExpression === '' ? '0' : currentExpression;
+        let val = safeEvaluate(expr);
+        if (val !== undefined && !isNaN(val)) {
+            let expVal = Math.exp(val);
+            currentExpression = formatResult(expVal);
+            updateDisplay();
+            calculateResult();
+        } else {
+            resultDiv.innerText = 'exp erro';
+            resultDiv.classList.add('error-shake');
+            setTimeout(() => resultDiv.classList.remove('error-shake'), 500);
+        }
+    }
+    
+    function calculateFactorial() {
+        if (errorFlag) clearAll();
+        let expr = currentExpression === '' ? '0' : currentExpression;
+        let val = safeEvaluate(expr);
+        if (val !== undefined && !isNaN(val) && Number.isInteger(val) && val >= 0 && val <= 170) {
+            let fact = 1;
+            for (let i = 2; i <= val; i++) fact *= i;
+            currentExpression = formatResult(fact);
+            updateDisplay();
+            calculateResult();
+        } else {
+            resultDiv.innerText = 'fatorial inválido (n inteiro >=0)';
+            resultDiv.classList.add('error-shake');
+            setTimeout(() => resultDiv.classList.remove('error-shake'), 500);
+        }
+    }
+    
+    // Efeito bônus: animação de clique nos botões
+    function animateButtonPress() {
+        // apenas efeito visual genérico (pode ser ignorado)
+        let temp = resultDiv.style.transform;
+        resultDiv.style.transform = 'scale(1.02)';
+        setTimeout(() => resultDiv.style.transform = temp, 100);
+    }
+    
+    // Relógio digital atualizado
+    function updateClock() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('pt-BR', { hour12: false });
+        document.getElementById('liveClock').innerText = timeStr;
+    }
+    
+    // Partículas dinâmicas
+    function createParticles() {
+        for (let i = 0; i < 35; i++) {
+            let particle = document.createElement('div');
+            particle.classList.add('particle');
+            let size = Math.random() * 4 + 2;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 20 + 's';
+            particle.style.animationDuration = Math.random() * 15 + 8 + 's';
+            particle.style.opacity = Math.random() * 0.4;
+            document.body.appendChild(particle);
+        }
+    }
+    
+    // Keyboard support
+    function handleKeyboard(e) {
+        const key = e.key;
+        if (/[0-9()+\-*/.]/.test(key)) {
+            e.preventDefault();
+            append(key);
+        } else if (key === 'Enter') {
+            e.preventDefault();
+            calculateResult();
+        } else if (key === 'Escape') {
+            clearAll();
+        } else if (key === 'Backspace') {
+            deleteLast();
+        } else if (key === '^') {
+            append('^');
+        } else if (key === 'l') {
+            calculateLog();
+        } else if (key === 's') {
+            calculateSin();
+        }
+    }
+    
+    // Inicialização
+    window.onload = () => {
+        updateClock();
+        setInterval(updateClock, 1000);
+        createParticles();
+        updateDisplay();
+        document.addEventListener('keydown', handleKeyboard);
+    };
+    
+    // Expor funções globais
+    window.append = append;
+    window.clearAll = clearAll;
+    window.deleteLast = deleteLast;
+    window.calculateResult = calculateResult;
+    window.calculateSqrt = calculateSqrt;
+    window.calculatePower = calculatePower;
+    window.calculateLog = calculateLog;
+    window.calculateLn = calculateLn;
+    window.calculateSin = calculateSin;
+    window.calculateCos = calculateCos;
+    window.calculateTan = calculateTan;
+    window.calculatePi = calculatePi;
+    window.calculateExp = calculateExp;
+    window.calculateFactorial = calculateFactorial;
+</script>
+</body>
+</html>
+```
